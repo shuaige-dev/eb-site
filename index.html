@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Erect Banana — AI Generative Fill for Photoshop</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --y:#F5C93A;
+  --yd:#C49B10;
+  --bg:#0C0C0C;
+  --bg2:#141414;
+  --bg3:#1C1C1C;
+  --br:#2A2A2A;
+  --t:#F0EDE6;
+  --tm:#9A9690;
+  --ts:#5A5752;
+  --r:6px;
+}
+body{background:var(--bg);color:var(--t);font-family:'Syne',sans-serif;min-height:100vh;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+
+/* NAV */
+nav{display:flex;align-items:center;justify-content:space-between;padding:20px 40px;border-bottom:1px solid var(--br);position:sticky;top:0;background:rgba(12,12,12,0.92);backdrop-filter:blur(12px);z-index:100}
+.logo{display:flex;align-items:center;gap:10px;font-size:15px;font-weight:700;letter-spacing:-0.02em}
+.logo-icon{width:28px;height:28px;background:var(--y);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:16px}
+.nav-links{display:flex;align-items:center;gap:28px;font-size:13px;color:var(--tm)}
+.nav-links a:hover{color:var(--t);transition:color .15s}
+.nav-cta{background:var(--y);color:#0C0C0C;padding:8px 18px;border-radius:var(--r);font-size:13px;font-weight:700;cursor:pointer;border:none;transition:background .15s}
+.nav-cta:hover{background:#FFD54F}
+
+/* HERO */
+.hero{padding:80px 40px 60px;max-width:900px;margin:0 auto;text-align:center}
+.badge{display:inline-flex;align-items:center;gap:6px;background:var(--bg3);border:1px solid var(--br);border-radius:100px;padding:5px 14px;font-size:11px;font-weight:600;color:var(--y);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:28px}
+.badge-dot{width:6px;height:6px;background:var(--y);border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+h1{font-size:clamp(42px,7vw,72px);font-weight:800;line-height:1.03;letter-spacing:-0.03em;margin-bottom:20px}
+h1 span{color:var(--y)}
+.hero-sub{font-size:17px;color:var(--tm);line-height:1.65;max-width:560px;margin:0 auto 36px;font-family:'Space Mono',monospace;font-size:13px}
+.hero-actions{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap}
+.btn-primary{background:var(--y);color:#0C0C0C;padding:14px 32px;border-radius:var(--r);font-size:15px;font-weight:700;cursor:pointer;border:none;transition:all .15s;display:inline-flex;align-items:center;gap:8px}
+.btn-primary:hover{background:#FFD54F;transform:translateY(-1px)}
+.btn-secondary{background:transparent;color:var(--t);padding:14px 24px;border-radius:var(--r);font-size:14px;font-weight:600;cursor:pointer;border:1px solid var(--br);transition:all .15s;display:inline-flex;align-items:center;gap:8px}
+.btn-secondary:hover{border-color:var(--tm)}
+.price-note{font-size:12px;color:var(--ts);margin-top:16px;font-family:'Space Mono',monospace}
+.price-note strong{color:var(--y)}
+
+/* DEMO AREA */
+.demo-area{margin:0 40px;border-radius:12px;background:var(--bg2);border:1px solid var(--br);overflow:hidden;position:relative}
+.demo-topbar{display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid var(--br)}
+.demo-dot{width:10px;height:10px;border-radius:50%}
+.demo-title{font-size:11px;color:var(--ts);margin-left:8px;font-family:'Space Mono',monospace}
+.demo-canvas{height:280px;display:grid;grid-template-columns:200px 1fr;gap:0}
+.demo-tools{border-right:1px solid var(--br);padding:16px 12px;display:flex;flex-direction:column;gap:8px}
+.tool-group{display:flex;flex-direction:column;gap:4px}
+.tool-label{font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ts);font-family:'Space Mono',monospace;padding:0 4px;margin-top:8px}
+.tool-item{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:4px;font-size:12px;color:var(--tm);cursor:pointer;transition:background .1s}
+.tool-item:hover,.tool-item.active{background:var(--bg3);color:var(--t)}
+.tool-item.active .tool-dot{background:var(--y)}
+.tool-dot{width:6px;height:6px;border-radius:50%;background:var(--ts);flex-shrink:0}
+.demo-image{position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;background:#1a1a1a}
+.demo-grid{position:absolute;inset:0;background-image:linear-gradient(var(--br) 1px,transparent 1px),linear-gradient(90deg,var(--br) 1px,transparent 1px);background-size:24px 24px;opacity:0.4}
+.demo-selection{position:absolute;top:60px;left:80px;width:180px;height:120px;border:2px dashed var(--y);border-radius:4px;animation:march 1s linear infinite}
+@keyframes march{to{stroke-dashoffset:-16px}}
+.demo-tag{position:absolute;top:44px;left:80px;background:var(--y);color:#0C0C0C;font-size:9px;font-weight:700;padding:3px 8px;border-radius:3px;font-family:'Space Mono',monospace}
+.demo-prompt{position:absolute;bottom:0;left:0;right:0;background:var(--bg2);border-top:1px solid var(--br);display:flex;align-items:center;gap:10px;padding:10px 16px}
+.demo-input{flex:1;background:var(--bg3);border:1px solid var(--br);border-radius:4px;padding:6px 12px;font-size:12px;color:var(--t);font-family:'Space Mono',monospace}
+.demo-gen-btn{background:var(--y);color:#0C0C0C;border:none;padding:6px 14px;border-radius:4px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap}
+
+/* SECTION DIVIDER */
+.section{padding:64px 40px;max-width:900px;margin:0 auto}
+.section-label{font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--ts);font-family:'Space Mono',monospace;margin-bottom:12px}
+h2{font-size:32px;font-weight:800;letter-spacing:-0.02em;line-height:1.2;margin-bottom:8px}
+.section-sub{font-size:15px;color:var(--tm);line-height:1.65;margin-bottom:40px;max-width:520px}
+
+/* WHY GRID */
+.why-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--br);border-radius:10px;overflow:hidden;border:1px solid var(--br)}
+.why-card{background:var(--bg2);padding:28px 24px}
+.why-card:hover{background:var(--bg3)}
+.why-icon{width:36px;height:36px;background:rgba(245,201,58,0.1);border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;font-size:18px}
+.why-title{font-size:14px;font-weight:700;margin-bottom:8px}
+.why-desc{font-size:12px;color:var(--tm);line-height:1.6;font-family:'Space Mono',monospace}
+.why-cross{color:#E24B4A;font-size:13px;font-family:'Space Mono',monospace;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.why-cross::before{content:'✕';color:#E24B4A}
+.why-check{color:#1D9E75;font-size:13px;font-family:'Space Mono',monospace;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.why-check::before{content:'✓';color:#1D9E75}
+
+/* FEATURES */
+.features-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
+.feature-card{background:var(--bg2);border:1px solid var(--br);border-radius:10px;padding:24px}
+.feature-card:hover{border-color:var(--ts)}
+.feat-num{font-size:10px;font-family:'Space Mono',monospace;color:var(--y);margin-bottom:12px;letter-spacing:0.1em}
+.feat-title{font-size:15px;font-weight:700;margin-bottom:8px}
+.feat-desc{font-size:12px;color:var(--tm);line-height:1.7;font-family:'Space Mono',monospace}
+
+/* PRICING */
+.pricing-wrap{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start}
+.price-card{background:var(--bg2);border:1px solid var(--br);border-radius:10px;padding:32px;position:relative}
+.price-card.featured{border-color:var(--y);background:var(--bg3)}
+.price-tag{font-size:48px;font-weight:800;letter-spacing:-0.03em;line-height:1}
+.price-tag sub{font-size:20px;vertical-align:baseline;font-weight:400;color:var(--tm)}
+.price-period{font-size:12px;color:var(--ts);font-family:'Space Mono',monospace;margin-top:6px;margin-bottom:20px}
+.price-badge{position:absolute;top:-12px;left:24px;background:var(--y);color:#0C0C0C;font-size:10px;font-weight:700;padding:4px 12px;border-radius:100px;letter-spacing:0.06em}
+.price-list{list-style:none;margin-bottom:28px}
+.price-list li{font-size:12px;font-family:'Space Mono',monospace;color:var(--tm);padding:6px 0;border-bottom:1px solid var(--br);display:flex;align-items:center;gap:8px}
+.price-list li::before{content:'—';color:var(--y);flex-shrink:0}
+.price-list li.muted::before{content:'—';color:var(--ts)}
+.price-list li.muted{color:var(--ts)}
+.btn-buy{width:100%;background:var(--y);color:#0C0C0C;padding:13px 0;border-radius:var(--r);font-size:14px;font-weight:700;cursor:pointer;border:none;transition:background .15s}
+.btn-buy:hover{background:#FFD54F}
+.btn-buy-outline{width:100%;background:transparent;color:var(--t);padding:13px 0;border-radius:var(--r);font-size:14px;font-weight:600;cursor:pointer;border:1px solid var(--br);transition:all .15s}
+.btn-buy-outline:hover{border-color:var(--tm)}
+.after-note{font-size:11px;color:var(--ts);font-family:'Space Mono',monospace;text-align:center;margin-top:10px}
+
+/* STEPS */
+.steps{display:flex;flex-direction:column;gap:0}
+.step{display:grid;grid-template-columns:40px 1fr;gap:20px;padding:24px 0;border-bottom:1px solid var(--br)}
+.step:last-child{border-bottom:none}
+.step-num{width:32px;height:32px;border-radius:50%;background:var(--bg3);border:1px solid var(--br);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--y);font-family:'Space Mono',monospace;flex-shrink:0}
+.step-title{font-size:14px;font-weight:700;margin-bottom:4px}
+.step-desc{font-size:12px;color:var(--tm);font-family:'Space Mono',monospace;line-height:1.65}
+.step-desc a{color:var(--y);text-decoration:underline}
+
+/* FAQ */
+.faq{display:flex;flex-direction:column;gap:0}
+.faq-item{border-bottom:1px solid var(--br);padding:20px 0}
+.faq-q{font-size:14px;font-weight:600;margin-bottom:8px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.faq-q .toggle{color:var(--y);font-size:18px;font-weight:400;line-height:1}
+.faq-a{font-size:12px;color:var(--tm);font-family:'Space Mono',monospace;line-height:1.75}
+
+/* FOOTER */
+footer{border-top:1px solid var(--br);padding:32px 40px;display:flex;align-items:center;justify-content:space-between;font-size:12px;color:var(--ts);font-family:'Space Mono',monospace}
+footer a{color:var(--tm);transition:color .15s}
+footer a:hover{color:var(--t)}
+.footer-links{display:flex;gap:24px}
+
+/* BYOK highlight */
+.byok-banner{background:rgba(245,201,58,0.06);border:1px solid rgba(245,201,58,0.2);border-radius:10px;padding:24px 28px;display:flex;align-items:flex-start;gap:16px;margin-top:40px}
+.byok-icon{width:36px;height:36px;flex-shrink:0;background:rgba(245,201,58,0.1);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px}
+.byok-title{font-size:13px;font-weight:700;color:var(--y);margin-bottom:4px}
+.byok-desc{font-size:12px;color:var(--tm);font-family:'Space Mono',monospace;line-height:1.7}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">
+    <div class="logo-icon">🍌</div>
+    Erect Banana
+  </div>
+  <div class="nav-links">
+    <a href="#why">Why</a>
+    <a href="#features">Features</a>
+    <a href="#install">Install</a>
+    <a href="#faq">FAQ</a>
+  </div>
+  <button class="nav-cta" onclick="openLink('https://junshaon.gumroad.com/l/erect-banana')">Buy $15 →</button>
+</nav>
+
+<div class="hero">
+  <div class="badge">
+    <span class="badge-dot"></span>
+    Powered by Gemini 3.1 Flash Image
+  </div>
+  <h1>AI Generative Fill,<br><span>inside Photoshop.</span></h1>
+  <p class="hero-sub">// No app switching. No exporting. No uploading.<br>// Draw selection → type prompt → click Generate.</p>
+  <div class="hero-actions">
+    <button class="btn-primary" onclick="openLink('https://junshaon.gumroad.com/l/erect-banana')">
+      Buy now — $15
+    </button>
+    <button class="btn-secondary" onclick="openLink('https://github.com/shuaige-dev/erect-banana/releases/latest')">
+      ↓ Download installer
+    </button>
+  </div>
+  <p class="price-note">One-time purchase · <strong>Founders' price</strong> · Lifetime v1.x updates</p>
+</div>
+
+<div class="demo-area" style="max-width:860px;margin:0 auto 60px;margin-left:40px;margin-right:40px">
+  <div class="demo-topbar">
+    <div class="demo-dot" style="background:#E24B4A"></div>
+    <div class="demo-dot" style="background:#F5C93A"></div>
+    <div class="demo-dot" style="background:#1D9E75"></div>
+    <span class="demo-title">Adobe Photoshop 2026 — Erect Banana v1.0.0</span>
+  </div>
+  <div class="demo-canvas">
+    <div class="demo-tools">
+      <div class="tool-label">Selection</div>
+      <div class="tool-group">
+        <div class="tool-item active"><span class="tool-dot"></span>Rectangular</div>
+        <div class="tool-item"><span class="tool-dot"></span>Lasso</div>
+        <div class="tool-item"><span class="tool-dot"></span>Magic Wand</div>
+      </div>
+      <div class="tool-label">Erect Banana</div>
+      <div class="tool-group">
+        <div class="tool-item active"><span class="tool-dot"></span>Generate Fill</div>
+        <div class="tool-item"><span class="tool-dot"></span>Settings</div>
+      </div>
+      <div style="margin-top:auto;padding-top:16px;border-top:1px solid var(--br)">
+        <div style="font-size:9px;color:var(--ts);font-family:'Space Mono',monospace">License: active ✓</div>
+        <div style="font-size:9px;color:var(--ts);font-family:'Space Mono',monospace;margin-top:3px">API: Gemini 3.1 Flash</div>
+      </div>
+    </div>
+    <div class="demo-image">
+      <div class="demo-grid"></div>
+      <svg width="340" height="200" viewBox="0 0 340 200" style="position:relative;z-index:1">
+        <defs>
+          <filter id="blur"><feGaussianBlur stdDeviation="8"/></filter>
+        </defs>
+        <rect x="0" y="0" width="340" height="200" fill="#1E1E1E"/>
+        <ellipse cx="170" cy="130" rx="120" ry="50" fill="#2A2A2A"/>
+        <rect x="50" y="30" width="240" height="140" rx="4" fill="#222" stroke="#333" stroke-width="1"/>
+        <circle cx="90" cy="70" r="20" fill="#3A3A3A"/>
+        <circle cx="90" cy="70" r="12" fill="#4A4A4A"/>
+        <rect x="120" y="55" width="140" height="8" rx="4" fill="#333"/>
+        <rect x="120" y="71" width="100" height="6" rx="3" fill="#2C2C2C"/>
+        <rect x="120" y="85" width="120" height="6" rx="3" fill="#2C2C2C"/>
+        <rect x="50" y="110" width="240" height="50" rx="4" fill="#252525"/>
+        <rect x="60" y="120" width="80" height="6" rx="3" fill="#333"/>
+        <rect x="60" y="133" width="55" height="5" rx="2" fill="#2C2C2C"/>
+        <rect x="160" y="120" width="80" height="6" rx="3" fill="#333"/>
+        <rect x="160" y="133" width="55" height="5" rx="2" fill="#2C2C2C"/>
+        <rect x="110" y="40" width="130" height="90" fill="none" stroke="#F5C93A" stroke-width="1.5" stroke-dasharray="6,4" rx="2"/>
+        <rect x="110" y="28" width="90" height="14" rx="3" fill="#F5C93A"/>
+        <text x="116" y="39" font-size="8" fill="#0C0C0C" font-family="'Space Mono',monospace" font-weight="700">GENERATE HERE</text>
+      </svg>
+      <div class="demo-prompt">
+        <div class="demo-input">a cozy coffee shop window with rain outside...</div>
+        <button class="demo-gen-btn">⚡ Generate</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="why">
+  <div class="section-label">// why this exists</div>
+  <h2>Firefly is slow.<br>Midjourney breaks flow.</h2>
+  <p class="section-sub">You're a retoucher. Every app-switch costs creative momentum. Erect Banana lives inside Photoshop — permanently.</p>
+
+  <div class="why-grid">
+    <div class="why-card">
+      <div class="why-title" style="color:var(--tm);margin-bottom:14px;font-size:12px;letter-spacing:0.05em">Adobe Firefly</div>
+      <div class="why-cross">Slow generation</div>
+      <div class="why-cross">$60+/year subscription</div>
+      <div class="why-cross">Not available everywhere</div>
+      <div class="why-cross">Credits run out</div>
+    </div>
+    <div class="why-card">
+      <div class="why-title" style="color:var(--tm);margin-bottom:14px;font-size:12px;letter-spacing:0.05em">Midjourney / DALL-E</div>
+      <div class="why-cross">Leave Photoshop to use it</div>
+      <div class="why-cross">Copy-paste workflow</div>
+      <div class="why-cross">No native PS integration</div>
+      <div class="why-cross">Monthly subscription</div>
+    </div>
+    <div class="why-card" style="border-left:2px solid var(--y)">
+      <div class="why-title" style="color:var(--y);margin-bottom:14px;font-size:12px;letter-spacing:0.05em">🍌 Erect Banana</div>
+      <div class="why-check">Native PS UXP plugin</div>
+      <div class="why-check">$15 one-time, no sub</div>
+      <div class="why-check">Gemini — fastest inpainting</div>
+      <div class="why-check">BYOK, free Google tier</div>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="features">
+  <div class="section-label">// what you get</div>
+  <h2>Everything a retoucher needs.</h2>
+  <p class="section-sub">No bloat. No subscription features gating basic tools. Just generation, composited directly into your layer.</p>
+
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feat-num">01 — GENERATION</div>
+      <div class="feat-title">One-click generative fill</div>
+      <div class="feat-desc">Works on any selection shape — rectangular, lasso, magic wand, or pen path. The result drops directly into a new layer, composited and ready.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feat-num">02 — BYOK</div>
+      <div class="feat-title">Bring your own API key</div>
+      <div class="feat-desc">Your images go from your machine → directly to Google. We never see your photos. Use the free tier (15 req/min) or scale up. You pay Google directly, zero markup.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feat-num">03 — COMPATIBILITY</div>
+      <div class="feat-title">Standard and portable PS</div>
+      <div class="feat-desc">Separate installers for standard Adobe-distributed Photoshop and standalone/portable installs. Works on Photoshop 2024 (v25.0+) and later.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feat-num">04 — MODEL</div>
+      <div class="feat-title">Gemini 3.1 Flash Image</div>
+      <div class="feat-desc">Currently one of the highest-quality models for inpainting and scene extension. Handles portraits, products, and landscapes. Faster than the Adobe pipeline.</div>
+    </div>
+  </div>
+
+  <div class="byok-banner">
+    <div class="byok-icon">🔑</div>
+    <div>
+      <div class="byok-title">Privacy-first by design</div>
+      <div class="byok-desc">Your images never touch our servers. License validation is a single HTTPS request — after that, zero communication from us. Your files, your data, your Google account.</div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-label">// pricing</div>
+  <h2>Buy once. Use forever.</h2>
+  <p class="section-sub">Founders' pricing won't last. Lock in $15 before v2.0 ships and the price goes to $39.</p>
+
+  <div class="pricing-wrap">
+    <div class="price-card featured">
+      <div class="price-badge">FOUNDERS' PRICE</div>
+      <div class="price-tag"><sub>$</sub>15</div>
+      <div class="price-period">one-time · lifetime v1.x updates</div>
+      <ul class="price-list">
+        <li>License for 1 machine (HWID)</li>
+        <li>Lifetime updates in v1.x line</li>
+        <li>No subscription, no per-gen fee</li>
+        <li>Instant delivery to email</li>
+        <li>Email support within 24h</li>
+      </ul>
+      <button class="btn-buy" onclick="openLink('https://junshaon.gumroad.com/l/erect-banana')">Buy now on Gumroad →</button>
+      <p class="after-note">After v2.0: price goes to $39</p>
+    </div>
+    <div class="price-card">
+      <div class="price-tag" style="font-size:32px;color:var(--ts);text-decoration:line-through"><sub style="font-size:14px">$</sub>39</div>
+      <div class="price-period">after v2.0 launch</div>
+      <ul class="price-list">
+        <li>Same license, same features</li>
+        <li>macOS support (planned v2.0)</li>
+        <li class="muted">No retroactive discount</li>
+      </ul>
+      <button class="btn-buy-outline" onclick="openLink('https://junshaon.gumroad.com/l/erect-banana')">Get $15 now instead</button>
+      <p class="after-note">Founders lock in the lower price permanently</p>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="install">
+  <div class="section-label">// getting started</div>
+  <h2>90 seconds to first generation.</h2>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div>
+        <div class="step-title">Buy a license key</div>
+        <div class="step-desc">Purchase on <a href="https://junshaon.gumroad.com/l/erect-banana">Gumroad ($15)</a>. Your key is delivered to your email instantly after payment.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div>
+        <div class="step-title">Download the installer</div>
+        <div class="step-desc">Get <code style="background:var(--bg3);padding:1px 5px;border-radius:3px;color:var(--y)">ErectBanana-X.Y.Z-Setup-Pro.exe</code> from the <a href="https://github.com/shuaige-dev/erect-banana/releases/latest">Releases page</a>. Mainland China users: use the <a href="https://gitee.com/shuaige-dev/erect-banana/releases">Gitee mirror</a>.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div>
+        <div class="step-title">Run the installer</div>
+        <div class="step-desc">Double-click, accept defaults, done. Windows 10/11 64-bit required. Photoshop 2024+ (v25.0+) must be installed.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div>
+        <div class="step-title">Get a free Google AI key</div>
+        <div class="step-desc">Sign up at <a href="https://aistudio.google.com/apikey">aistudio.google.com/apikey</a>. Takes about 1 minute. Free tier: 15 requests/min — enough for most workflows.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">5</div>
+      <div>
+        <div class="step-title">Activate and generate</div>
+        <div class="step-desc">Open Photoshop → Plugins → Erect Banana. Paste your license key, then your Google API key. Make a selection, type a prompt, click Generate.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="faq">
+  <div class="section-label">// faq</div>
+  <h2>Questions.</h2>
+  <div class="faq">
+    <div class="faq-item">
+      <div class="faq-q">Will my images be uploaded to your servers? <span class="toggle">+</span></div>
+      <div class="faq-a">No. Images go directly from your machine to the Google API. Our servers only do license validation — one HTTPS request, then we're done. Your files stay yours.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">How many machines can I activate? <span class="toggle">+</span></div>
+      <div class="faq-a">1 machine per license (HWID-bound). Switching computers? Email i@liangzai.org to request an unbind — usually handled within a few hours.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Does it work on macOS? <span class="toggle">+</span></div>
+      <div class="faq-a">v1.x is Windows only (10/11 64-bit). macOS support is planned for v2.0. Every purchase is a vote for prioritizing it — Founders' buyers get the upgrade at no extra charge within the v1.x line.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">How does Gemini compare to Firefly for retouching? <span class="toggle">+</span></div>
+      <div class="faq-a">Faster (no Adobe middleware), cheaper (you use Google's free tier), and not tied to an Adobe subscription. Quality is Gemini 3.1 Flash Image — excellent for portraits, product shots, and scene extension. Extremely complex lighting scenarios may occasionally favor Firefly.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Why is it called Erect Banana? <span class="toggle">+</span></div>
+      <div class="faq-a">Gemini 3.1 Flash Image's internal codename is "Nano Banana2". This plugin makes Photoshop's AI fill capability stand up straight. That's the whole reason.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Do I need a paid Google account? <span class="toggle">+</span></div>
+      <div class="faq-a">No. Google AI Studio has a free tier at 15 requests/min — sufficient for most retouching sessions. If you process high volumes, you can upgrade your Google API plan directly.</div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div>© 2026 shuaige · Erect Banana</div>
+  <div class="footer-links">
+    <a href="https://github.com/shuaige-dev/erect-banana">GitHub</a>
+    <a href="https://github.com/shuaige-dev/erect-banana/releases/latest">Download</a>
+    <a href="https://youtu.be/jNrBVeFAguQ">Demo video</a>
+    <a href="mailto:i@liangzai.org">i@liangzai.org</a>
+  </div>
+</footer>
+
+<script>
+function openLink(url){
+  const a=document.createElement('a');
+  a.href=url;
+  a.target='_blank';
+  a.click();
+}
+document.querySelectorAll('.faq-item').forEach(item=>{
+  const q=item.querySelector('.faq-q');
+  const a=item.querySelector('.faq-a');
+  const tog=item.querySelector('.toggle');
+  a.style.display='none';
+  q.addEventListener('click',()=>{
+    const open=a.style.display!=='none';
+    a.style.display=open?'none':'block';
+    tog.textContent=open?'+':'−';
+  });
+});
+</script>
+</body>
+</html>
