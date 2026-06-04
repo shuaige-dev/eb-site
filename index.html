@@ -14,7 +14,8 @@
 <body>
 
 <nav>
-  <div class="logo">🍌 <span>AI</span> 硬邦邦的香蕉</div>
+  <!-- 图4已改为纯文字 -->
+  <div class="logo">硬邦邦的香蕉</div>
   <div class="subnav">Photoshop 插件</div>
 </nav>
 
@@ -26,9 +27,18 @@
     无需导出，无需切软件，无需流程成本
   </p>
 
-  <div class="actions">
-    <button class="btn primary">立即购买 ¥49</button>
-    <button class="btn secondary">查看演示</button>
+  <!-- 图3修改：下载及二级菜单结构 -->
+  <div class="actions-container">
+    <div class="actions">
+      <button class="btn primary" onclick="toggleDownloadMenu(event)">下载</button>
+      <button class="btn secondary" onclick="scrollToPrice()">查看演示</button>
+    </div>
+    
+    <div class="sub-menu" id="downloadMenu">
+      <a href="#" class="sub-menu-item">免费试用下载</a>
+      <div class="divider"></div>
+      <a href="#" class="sub-menu-item data-activation" onclick="scrollToPrice()">输入授权码激活</a>
+    </div>
   </div>
 </section>
 
@@ -64,20 +74,23 @@
   </div>
 </section>
 
-<!-- CHAT -->
-<div class="chat-btn" onclick="toggleChat()">💬</div>
-
-<div class="chat" id="chat">
-  <div class="chat-header">AI 客服</div>
-  <div class="chat-body">可以问安装 / 激活 / 报错问题</div>
-  <input class="chat-input" placeholder="输入问题..." />
-</div>
-
 <script>
-function toggleChat(){
-  const c=document.getElementById('chat');
-  c.style.display = (c.style.display==='flex')?'none':'flex';
+function toggleDownloadMenu(e) {
+  e.stopPropagation();
+  const menu = document.getElementById('downloadMenu');
+  const isShow = menu.style.display === 'flex';
+  menu.style.display = isShow ? 'none' : 'flex';
 }
+
+function scrollToPrice() {
+  document.querySelector('.price').scrollIntoView({ behavior: 'smooth' });
+  document.getElementById('downloadMenu').style.display = 'none';
+}
+
+// 点击页面其他地方自动收起二级菜单
+document.addEventListener('click', () => {
+  document.getElementById('downloadMenu').style.display = 'none';
+});
 </script>
 
 </body>
