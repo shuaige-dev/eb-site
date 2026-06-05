@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>硬邦邦的香蕉 · 使用说明</title>
+<style>
+  :root{
+    --bg:#ffffff; --card:#f5f5f7; --ink:#1a1a1a; --muted:#888;
+    --line:#e0e0e5; --accent:#0071e3; --accent2:#34c759; --link:#0071e3;
+    --radius:14px;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:-apple-system,"PingFang SC","Microsoft YaHei",Segoe UI,Roboto,sans-serif;
+    line-height:1.75; font-size:16px;
+  }
+  .wrap{max-width:860px; margin:0 auto; padding:48px 20px 96px}
+  header{text-align:center; margin-bottom:40px}
+  header .logo{font-size:44px}
+  header h1{font-size:30px; margin:10px 0 6px; letter-spacing:1px; color:var(--ink)}
+  header p{color:var(--muted); margin:0}
+  h2{
+    font-size:22px; margin:46px 0 14px; padding-left:12px;
+    border-left:4px solid var(--accent); color:var(--ink);
+  }
+  h3{font-size:17px; margin:26px 0 8px; color:var(--ink)}
+  p,li{color:var(--ink)}
+  a{color:var(--link); text-decoration:none}
+  .card{
+    background:var(--card); border:1px solid var(--line);
+    border-radius:var(--radius); padding:20px 22px; margin:16px 0;
+  }
+  .muted{color:var(--muted)}
+  .pill{
+    display:inline-block; background:#e8e8ed; border:1px solid var(--line);
+    border-radius:999px; padding:2px 12px; font-size:13px; color:var(--muted); margin:2px 4px 2px 0;
+  }
+  ol,ul{padding-left:22px} li{margin:6px 0}
+  kbd{
+    background:#e8e8ed; border:1px solid var(--line); border-bottom-width:2px;
+    border-radius:6px; padding:1px 8px; font-size:13px; font-family:Consolas,monospace; color:var(--ink);
+  }
+  .tip{border-left:4px solid var(--accent2); background:#f0faf0}
+  .warn{border-left:4px solid #f0a030; background:#fffbf0}
+  table{width:100%; border-collapse:collapse; margin:14px 0; font-size:15px}
+  th,td{border:1px solid var(--line); padding:9px 12px; text-align:left; vertical-align:top}
+  th{background:#f0f0f5; color:var(--ink)}
+  .toc a{display:inline-block; margin:4px 14px 4px 0; color:var(--muted)}
+  .toc a:hover{color:var(--link)}
+  code{background:#e8e8ed; padding:1px 6px; border-radius:5px; font-size:14px; color:var(--ink)}
+  footer{margin-top:60px; text-align:center; color:var(--muted); font-size:14px}
+  .big{font-size:18px}
+
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="logo">🍌</div>
+  <h1>硬邦邦的香蕉</h1>
+  <p>Photoshop 智能 AI 修图插件 · 使用说明</p>
+</header>
+
+<div class="card toc">
+  <strong>目录</strong><br>
+  <a href="#intro">① 它能做什么</a>
+  <a href="#install">② 安装</a>
+  <a href="#setup">③ 首次配置</a>
+  <a href="#fill">④ AI 创成式填充</a>
+  <a href="#outpaint">⑤ AI 扩图</a>
+  <a href="#models">⑥ 模型怎么选</a>
+  <a href="#tips">⑦ 实用技巧</a>
+  <a href="#faq">⑧ 常见问题</a>
+  <a href="#activate">⑨ 激活与试用</a>
+</div>
+
+<h2 id="intro">① 它能做什么</h2>
+<p class="big">「硬邦邦的香蕉」是一款装在 Photoshop 里的 AI 修图插件,把顶尖的 AI 图像生成能力直接接进你的工作流。两大核心功能:</p>
+<div class="card">
+  <p>🎨 <strong>AI 创成式填充</strong> —— 框选画面里的任意区域,用一句话描述你想要的改动,AI 就帮你重绘。换衣服、改颜色、加饰品、去杂物、改表情……都行。<strong>抠好的透明背景图也完美支持</strong>。</p>
+  <p>🖼️ <strong>AI 扩图(向外扩展)</strong> —— 把画布往外拉大,AI 自动补全空白区域,原图像素 100% 保留、自动对齐、颜色无缝衔接。半身照扩成全身、补全被裁掉的背景,一键搞定。</p>
+</div>
+
+<h2 id="install">② 安装</h2>
+<p class="muted">系统要求:Windows + Photoshop 24.2 或更新版本,联网。</p>
+<div class="card step">
+<ol>
+  <li>运行我们提供的<strong>安装程序</strong>,按提示完成安装。</li>
+  <li>安装完成后会自动<strong>打开安装文件夹</strong>并弹出提示。</li>
+  <li>把文件夹里的 <code>plugin.ccx</code> 文件,<strong>拖进 ZXP/UXP Installer</strong> 工具完成插件安装。
+    <div class="muted">没有这个工具?在 <a href="https://aescripts.com/learn/zxp-installer/" target="_blank">aescripts.com</a> 免费下载安装即可。</div>
+  </li>
+  <li><strong>重启 Photoshop</strong>。</li>
+  <li>顶部菜单 <strong>增效工具(Plug-ins)→ 硬邦邦的香蕉</strong>,打开插件面板即可使用。</li>
+</ol>
+</div>
+<div class="card tip"><strong>提示:</strong>安装包已自动配置好后台服务并设为开机自启,正常情况下你无需任何额外操作,打开 PS 就能用。</div>
+
+<h2 id="setup">③ 首次配置(填 API Key)</h2>
+<p>插件通过你自己的 AI 服务 API Key 来生成图像。第一次使用,在面板顶部的 <strong>API Key</strong> 输入框里粘贴你的 Key 即可(<strong>支持右键直接粘贴</strong>)。</p>
+<ul>
+  <li>插件会<strong>自动识别</strong>你的 Key 属于哪个平台,并切换到对应的可用模型。</li>
+  <li>支持的平台会以彩色标识显示:<span class="pill">🔵 AI Studio</span> <span class="pill">🟢 Vertex AI</span> <span class="pill">🟣 麦包 API</span></li>
+  <li>填好后可点 <strong>测试连通性</strong> 确认是否正常。</li>
+  <li>Key 会被记住,并提供<strong>历史下拉</strong>,换 Key 时直接选,不用重复输入。</li>
+</ul>
+<div class="card tip"><strong>小贴士:</strong>不确定用哪个平台?最简单的是去 Google AI Studio 申请一个免费 API Key,粘进来就能用。</div>
+
+<h2 id="fill">④ AI 创成式填充</h2>
+<p>用来<strong>重绘画面里的某一块</strong>——换衣服、改颜色、加/去物体等。</p>
+<h3>操作步骤</h3>
+<div class="card step">
+<ol>
+  <li>在 Photoshop 里用<strong>选区工具</strong>(套索、快速选择等)圈出你想改动的区域。
+    <div class="muted">建议沿物体边缘做<strong>精准轮廓选区</strong>,效果最好。</div></li>
+  <li>在插件的 <strong>提示词</strong> 框里,用一句话描述你要的效果,例如:<em>「把衣服改成背心」</em>、<em>「换成红色」</em>、<em>「去掉背景里的路人」</em>。</li>
+  <li>选好<strong>模型</strong>(默认 Gemini 3.1,见第 ⑥ 节)。</li>
+  <li>点击<strong>香蕉按钮(填充)</strong>,或直接按 <kbd>Enter</kbd>。</li>
+  <li>稍等片刻,结果会自动作为新图层<strong>精准置入</strong>原位置,显示「✓ 完成!结果已精准置入」。</li>
+</ol>
+</div>
+<div class="card tip"><strong>透明抠图也支持:</strong>对抠好的透明背景图做填充时,如果 AI 去掉了一部分(比如把 T 恤改成背心、去掉了袖子),那部分会<strong>自动变透明、边缘干净、无白边</strong>,不会留下白底残块。</div>
+
+<h2 id="outpaint">⑤ AI 扩图(向外扩展)</h2>
+<p>用来<strong>把画面往外补全</strong>——半身扩全身、补背景、改画幅比例。</p>
+<h3>操作步骤</h3>
+<div class="card step">
+<ol>
+  <li>用 <strong>裁剪工具</strong> 或 <strong>图像 › 画布大小</strong>,把画布往需要扩展的方向拉大,让原图周围出现<strong>透明空白区</strong>。</li>
+  <li>点击插件的 <strong>扩图</strong> 按钮。</li>
+  <li>AI 会补全空白区域,原图部分原封不动保留,结果自动置入新图层。</li>
+</ol>
+</div>
+<div class="card tip"><strong>扩全身小技巧:</strong>扩人物时,下方多留一些高度,AI 才能按真实人体比例把腿、脚补完整;留得太矮容易把比例压缩。</div>
+<div class="card warn"><strong>关于背景图层:</strong>如果提示「当前是背景图层(锁定状态)」,双击图层缩略图把它转成普通图层后再试。</div>
+
+<h2 id="models">⑥ 模型怎么选</h2>
+<p>面板里的 <strong>模型</strong> 下拉会根据你的 Key 自动列出可用项。常用建议:</p>
+<table>
+  <tr><th>模型</th><th>特点 / 适用</th></tr>
+  <tr><td><strong>Gemini 3.1 Flash Image</strong>(默认)</td><td>综合最佳,<strong>扩图对齐最准</strong>,速度快。日常首选。</td></tr>
+  <tr><td>Gemini 2.5 Flash Image</td><td>更快更省,质量略低,适合批量。</td></tr>
+  <tr><td>Gemini 3 Pro Image</td><td>质量更高,耗时更长,用于精修。</td></tr>
+  <tr><td>GPT-Image-2</td><td>另一套画风,适合局部填充改写。</td></tr>
+</table>
+<p class="muted">扩图遇到对不齐时,优先用 <strong>Gemini 3.1</strong>;它对结构续接的对齐效果最好。</p>
+
+<h2 id="tips">⑦ 实用技巧</h2>
+<ul>
+  <li><kbd>Enter</kbd> = 直接开始填充,不用去点按钮。</li>
+  <li>API Key 框支持<strong>右键粘贴</strong>;并有<strong>历史记忆下拉</strong>。</li>
+  <li>可<strong>导入参考图</strong>,让生成结果参考你给的风格/物体。</li>
+  <li>提示词越具体,结果越可控;一次不满意可以多生成几次取最好的。</li>
+  <li>右上角<strong>齿轮</strong>进入设置(语言等)。</li>
+</ul>
+
+<h2 id="faq">⑧ 常见问题</h2>
+<div class="card">
+  <h3>提示连接失败 / 用不了</h3>
+  <p>插件需要配套的后台服务运行(安装时已设为开机自启)。如遇此提示,<strong>重启 Photoshop</strong>;仍不行就<strong>重启电脑</strong>让后台服务自动拉起,再打开 PS。</p>
+
+  <h3>提示「没有找到选区」</h3>
+  <p>填充前必须先在画面上做一个选区。请用选区工具圈出要改的区域再点填充。</p>
+
+  <h3>生成失败 / 一直显示忙</h3>
+  <p>多为网络或服务繁忙。稍等几秒重试;确认 API Key 有效、账户额度充足、网络(含代理)正常。</p>
+
+  <h3>扩图接缝对不齐</h3>
+  <p>切换到 <strong>Gemini 3.1</strong> 模型;扩展方向多留些空白;复杂人体结构建议分次小幅扩展。</p>
+
+  <h3>改了设置 / 更新后没反应</h3>
+  <p>重启 Photoshop 让插件重新加载即可。</p>
+
+  <h3>透明图填充后边缘有问题</h3>
+  <p>请确认源图确实是透明背景(抠好的图)。本插件会自动处理透明边缘,正常情况下袖口/裁切处会干净透空。</p>
+</div>
+
+<h2 id="activate">⑨ 激活与试用</h2>
+<p>软件提供<strong>免费试用期</strong>,试用期内可直接使用,临近到期会有提示。</p>
+<div class="card step">
+<ol>
+  <li>购买后你会收到一个 <strong>License Key</strong>。</li>
+  <li>在插件的激活框里<strong>粘贴 Key → 点激活</strong>即可解锁长期使用。</li>
+  <li>一个 Key 可在<strong>有限台数</strong>的设备上使用;换设备遇到问题请联系我们。</li>
+</ol>
+</div>
+
+<footer>
+  硬邦邦的香蕉 · 让 Photoshop 修图更快更聪明 🍌<br>
+  如有问题或建议,欢迎联系我们。
+</footer>
+
+</div>
+</body>
+</html>
