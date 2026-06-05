@@ -14,7 +14,14 @@
   <div class="logo">硬邦邦的香蕉</div>
   <div class="nav-right">
     <a href="https://wwbtd.lanzoul.com/i7qGI3r5iaba" target="_blank" class="btn secondary sm">下载</a>
-    <a href="https://license.shuaige.win/redeem" target="_blank" class="btn primary sm">激活</a>
+    <div class="license-container">
+      <button class="btn primary sm" onclick="toggleLicenseMenu(event)">许可证密钥</button>
+      <div class="license-menu" id="licenseMenu">
+        <a href="https://afdian.com/item/794c76d0543d11f1b2e352540025c377" target="_blank" class="license-menu-item">购买许可证密钥</a>
+        <div class="divider"></div>
+        <a href="https://license.shuaige.win/redeem" target="_blank" class="license-menu-item">激活许可证密钥</a>
+      </div>
+    </div>
   </div>
 </nav>
 
@@ -70,6 +77,15 @@
 function toggleAiPanel() {
   document.getElementById('aiPanel').classList.toggle('open');
 }
+
+function toggleLicenseMenu(e) {
+  e.stopPropagation();
+  document.getElementById('licenseMenu').classList.toggle('open');
+}
+
+document.addEventListener('click', () => {
+  document.getElementById('licenseMenu').classList.remove('open');
+});
 
 window.addEventListener('scroll', () => {
   document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 20);

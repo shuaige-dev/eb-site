@@ -334,3 +334,39 @@ footer {
   .ai-fab { bottom: 20px; right: 20px; }
   .ai-panel { bottom: 82px; right: 20px; width: calc(100vw - 40px); }
 }
+
+/* =========================
+   LICENSE DROPDOWN
+========================= */
+.license-container {
+  position: relative;
+}
+
+.license-menu {
+  display: none;
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  flex-direction: column;
+  background: #fff;
+  border: 1px solid var(--border);
+  padding: 6px;
+  border-radius: 10px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+  min-width: 160px;
+  z-index: 50;
+  animation: menuIn 0.18s cubic-bezier(0.16,1,0.3,1);
+}
+
+.license-menu.open { display: flex; }
+
+.license-menu-item {
+  display: block;
+  padding: 9px 14px;
+  font-size: 13px;
+  color: var(--text);
+  border-radius: 6px;
+  transition: background 0.15s;
+  white-space: nowrap;
+}
+.license-menu-item:hover { background: var(--surface); }
