@@ -6,8 +6,8 @@
 <title>硬邦邦的香蕉 · 使用说明</title>
 <style>
   :root{
-    --bg:#ffffff; --card:#f5f5f7; --ink:#1a1a1a; --muted:#888;
-    --line:#e0e0e5; --accent:#0071e3; --accent2:#34c759; --link:#0071e3;
+    --bg:#0f1115; --card:#171a21; --ink:#e7e9ee; --muted:#9aa3b2;
+    --line:#262b35; --accent:#ffd23f; --accent2:#4ec94e; --link:#6db3ff;
     --radius:14px;
   }
   *{box-sizing:border-box}
@@ -19,13 +19,13 @@
   .wrap{max-width:860px; margin:0 auto; padding:48px 20px 96px}
   header{text-align:center; margin-bottom:40px}
   header .logo{font-size:44px}
-  header h1{font-size:30px; margin:10px 0 6px; letter-spacing:1px; color:var(--ink)}
+  header h1{font-size:30px; margin:10px 0 6px; letter-spacing:1px}
   header p{color:var(--muted); margin:0}
   h2{
     font-size:22px; margin:46px 0 14px; padding-left:12px;
-    border-left:4px solid var(--accent); color:var(--ink);
+    border-left:4px solid var(--accent);
   }
-  h3{font-size:17px; margin:26px 0 8px; color:var(--ink)}
+  h3{font-size:17px; margin:26px 0 8px; color:#fff}
   p,li{color:var(--ink)}
   a{color:var(--link); text-decoration:none}
   .card{
@@ -34,25 +34,25 @@
   }
   .muted{color:var(--muted)}
   .pill{
-    display:inline-block; background:#e8e8ed; border:1px solid var(--line);
+    display:inline-block; background:#23272f; border:1px solid var(--line);
     border-radius:999px; padding:2px 12px; font-size:13px; color:var(--muted); margin:2px 4px 2px 0;
   }
   ol,ul{padding-left:22px} li{margin:6px 0}
+  .step{counter-reset:none}
   kbd{
-    background:#e8e8ed; border:1px solid var(--line); border-bottom-width:2px;
-    border-radius:6px; padding:1px 8px; font-size:13px; font-family:Consolas,monospace; color:var(--ink);
+    background:#23272f; border:1px solid var(--line); border-bottom-width:2px;
+    border-radius:6px; padding:1px 8px; font-size:13px; font-family:Consolas,monospace; color:#fff;
   }
-  .tip{border-left:4px solid var(--accent2); background:#f0faf0}
-  .warn{border-left:4px solid #f0a030; background:#fffbf0}
+  .tip{border-left:4px solid var(--accent2); background:#13261a}
+  .warn{border-left:4px solid #e0a23f; background:#2a2113}
   table{width:100%; border-collapse:collapse; margin:14px 0; font-size:15px}
   th,td{border:1px solid var(--line); padding:9px 12px; text-align:left; vertical-align:top}
-  th{background:#f0f0f5; color:var(--ink)}
+  th{background:#1d2128; color:#fff}
   .toc a{display:inline-block; margin:4px 14px 4px 0; color:var(--muted)}
   .toc a:hover{color:var(--link)}
-  code{background:#e8e8ed; padding:1px 6px; border-radius:5px; font-size:14px; color:var(--ink)}
+  code{background:#23272f; padding:1px 6px; border-radius:5px; font-size:14px}
   footer{margin-top:60px; text-align:center; color:var(--muted); font-size:14px}
   .big{font-size:18px}
-
 </style>
 </head>
 <body>
@@ -86,28 +86,52 @@
 
 <h2 id="install">② 安装</h2>
 <p class="muted">系统要求:Windows + Photoshop 24.2 或更新版本,联网。</p>
+
+<h3>准备工作</h3>
+<div class="card">
+  <p>先下载 <strong>ZXP/UXP Installer</strong> 工具（用来把插件装进 Photoshop）：</p>
+  <p><a href="https://aescripts.com/learn/zxp-installer/" target="_blank">→ 点此下载 ZXP/UXP Installer</a></p>
+  <p>同时在 PS 里开启开发者模式：<strong>编辑 → 首选项 → 增效工具 → 勾选「启用开发人员模式」</strong>，然后关闭 PS。</p>
+</div>
+
+<h3>安装步骤</h3>
 <div class="card step">
 <ol>
-  <li>运行我们提供的<strong>安装程序</strong>,按提示完成安装。</li>
-  <li>安装完成后会自动<strong>打开安装文件夹</strong>并弹出提示。</li>
-  <li>把文件夹里的 <code>plugin.ccx</code> 文件,<strong>拖进 ZXP/UXP Installer</strong> 工具完成插件安装。
-    <div class="muted">没有这个工具?在 <a href="https://aescripts.com/learn/zxp-installer/" target="_blank">aescripts.com</a> 免费下载安装即可。</div>
+  <li>双击 <code>ErectBanana-x.x.x-License.exe</code>，按默认选项一路 Next → Install 完成安装。
+    <div class="muted">安装路径默认为 <code>C:\Users\你的用户名\AppData\Local\Erect Banana</code></div>
+  </li>
+  <li>安装完成后，找到安装目录里的 <code>plugin.ccx</code> 文件：
+    <ul>
+      <li><strong>有 Adobe CC 的用户</strong>：会自动弹出安装窗口，直接确认即可。</li>
+      <li><strong>没有 CC 的用户</strong>：打开 ZXP/UXP Installer，点 <strong>File → Open</strong>，找到 <code>plugin.ccx</code> 安装。</li>
+    </ul>
   </li>
   <li><strong>重启 Photoshop</strong>。</li>
-  <li>顶部菜单 <strong>增效工具(Plug-ins)→ 硬邦邦的香蕉</strong>,打开插件面板即可使用。</li>
+  <li>顶部菜单 <strong>增效工具(Plug-ins)→ 硬邦邦的香蕉</strong>，打开插件面板即可使用。</li>
 </ol>
 </div>
-<div class="card tip"><strong>提示:</strong>安装包已自动配置好后台服务并设为开机自启,正常情况下你无需任何额外操作,打开 PS 就能用。</div>
+<div class="card tip"><strong>提示:</strong>安装包已自动配置好后台服务并设为开机自启，正常情况下你无需任何额外操作，打开 PS 就能用。</div>
 
 <h2 id="setup">③ 首次配置(填 API Key)</h2>
-<p>插件通过你自己的 AI 服务 API Key 来生成图像。第一次使用,在面板顶部的 <strong>API Key</strong> 输入框里粘贴你的 Key 即可(<strong>支持右键直接粘贴</strong>)。</p>
+<p>插件通过 AI 服务 API Key 来生成图像。第一次使用，在面板顶部的 <strong>API Key</strong> 输入框里粘贴你的 Key 即可（<strong>支持右键直接粘贴</strong>）。</p>
 <ul>
-  <li>插件会<strong>自动识别</strong>你的 Key 属于哪个平台,并切换到对应的可用模型。</li>
-  <li>支持的平台会以彩色标识显示:<span class="pill">🔵 AI Studio</span> <span class="pill">🟢 Vertex AI</span> <span class="pill">🟣 麦包 API</span></li>
+  <li>插件会<strong>自动识别</strong>你的 Key 属于哪个平台，并切换到对应的可用模型。</li>
+  <li>支持的平台会以彩色标识显示：<span class="pill">🔵 AI Studio</span> <span class="pill">🟢 Vertex AI</span> <span class="pill">🟣 麦包 API</span></li>
   <li>填好后可点 <strong>测试连通性</strong> 确认是否正常。</li>
-  <li>Key 会被记住,并提供<strong>历史下拉</strong>,换 Key 时直接选,不用重复输入。</li>
+  <li>Key 会被记住，并提供<strong>历史下拉</strong>，换 Key 时直接选，不用重复输入。</li>
 </ul>
-<div class="card tip"><strong>小贴士:</strong>不确定用哪个平台?最简单的是去 Google AI Studio 申请一个免费 API Key,粘进来就能用。</div>
+
+<h3>去哪里获取 API Key？</h3>
+<div class="card">
+  <p>支持以下三个平台，选一个申请即可：</p>
+  <table>
+    <tr><th>平台</th><th>地址</th><th>说明</th></tr>
+    <tr><td><strong>Google AI Studio</strong>（推荐）</td><td><a href="https://aistudio.google.com/prompts/new_chat" target="_blank">aistudio.google.com</a></td><td>免费额度，支持 Gemini 全系列</td></tr>
+    <tr><td><strong>ChatGPT 官方</strong></td><td><a href="https://platform.openai.com/login" target="_blank">platform.openai.com</a></td><td>支持 GPT-Image-2</td></tr>
+    <tr><td><strong>麦包 API</strong>（国内方便）</td><td><a href="https://api.maibao.chat/register?aff=Ubsi" target="_blank">api.maibao.chat</a></td><td>Gemini + GPT 都支持，充值方便</td></tr>
+  </table>
+</div>
+<div class="card tip"><strong>小贴士：</strong>国内用户如果访问 Google 有困难，推荐使用<strong>麦包 API</strong>，或配合住宅 IP 工具：<a href="https://iproyal.cn/?r=1313660" target="_blank">IPRoyal</a>。</div>
 
 <h2 id="fill">④ AI 创成式填充</h2>
 <p>用来<strong>重绘画面里的某一块</strong>——换衣服、改颜色、加/去物体等。</p>
