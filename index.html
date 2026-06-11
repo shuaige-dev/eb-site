@@ -50,8 +50,15 @@
   </div>
 </footer>
 
+<!-- Google AI 客服 Widget -->
+<script src="https://cloud.google.com/ai/gen-app-builder/client?hl=zh_CN"></script>
+<gen-search-widget
+    configId="766c935f-087f-4f99-b352-dcaaed265a24"
+    triggerId="aiSupportBtn">
+</gen-search-widget>
+
 <!-- AI 客服按钮 -->
-<button class="ai-fab" id="aiFab" onclick="toggleAiPanel()" title="AI 助手">
+<button class="ai-fab" id="aiSupportBtn" title="AI 助手">
   <div class="ai-fab-ring"></div>
   <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
     <circle cx="11" cy="8" r="3" stroke="currentColor" stroke-width="1.5"/>
@@ -60,25 +67,7 @@
   </svg>
 </button>
 
-<div class="ai-panel" id="aiPanel">
-  <div class="ai-panel-header">
-    <div class="ai-panel-title">
-      <div class="ai-dot"></div>
-      AI 助手
-    </div>
-    <button class="ai-panel-close" onclick="toggleAiPanel()">✕</button>
-  </div>
-  <div class="ai-panel-body">
-    <p>AI 客服即将接入，<br>有任何问题请发邮件：</p>
-    <a href="mailto:i@shuaige.win" class="ai-email">i@shuaige.win</a>
-  </div>
-</div>
-
 <script>
-function toggleAiPanel() {
-  document.getElementById('aiPanel').classList.toggle('open');
-}
-
 function toggleLicenseMenu(e) {
   e.stopPropagation();
   document.getElementById('licenseMenu').classList.toggle('open');
