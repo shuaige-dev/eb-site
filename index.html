@@ -97,47 +97,226 @@
   </div>
 </footer>
 
-<!-- Google AI Widget -->
-<script src="https://cloud.google.com/ai/gen-app-builder/client?hl=zh_CN"></script>
-<gen-search-widget
-  configId="1e9948a8-b4bb-4ab5-9240-2dd397c1bad5"
-  triggerId="searchWidgetTrigger">
-</gen-search-widget>
+<!-- AI 聊天窗口样式 -->
+<style>
+.ai-fab {
+  position: fixed; bottom: 28px; right: 28px; z-index: 1000;
+  width: 52px; height: 52px; border-radius: 50%; border: none;
+  background: #0071e3; color: #fff; cursor: pointer;
+  box-shadow: 0 4px 20px rgba(0,113,227,0.5);
+  display: flex; align-items: center; justify-content: center;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.ai-fab:hover { transform: scale(1.08); box-shadow: 0 6px 28px rgba(0,113,227,0.7); }
+.ai-fab-ring {
+  position: absolute; inset: -4px; border-radius: 50%;
+  border: 2px solid rgba(0,113,227,0.3); animation: pulse 2s infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(1.15)} }
+
+.ai-chat {
+  position: fixed; bottom: 92px; right: 28px; z-index: 999;
+  width: 360px; height: 520px;
+  background: #1a1d24; border: 1px solid #2a2f3d;
+  border-radius: 18px; display: flex; flex-direction: column;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+  transform: scale(0.92) translateY(10px); opacity: 0;
+  pointer-events: none; transition: all 0.22s cubic-bezier(.4,0,.2,1);
+}
+.ai-chat.open { transform: scale(1) translateY(0); opacity: 1; pointer-events: all; }
+
+.ai-chat-header {
+  padding: 16px 18px; border-bottom: 1px solid #2a2f3d;
+  display: flex; align-items: center; justify-content: space-between;
+  border-radius: 18px 18px 0 0;
+}
+.ai-chat-title { display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 500; color: #fff; }
+.ai-dot { width: 8px; height: 8px; border-radius: 50%; background: #4ec94e; animation: pulse 2s infinite; }
+.ai-chat-close { background: none; border: none; color: #666; font-size: 18px; cursor: pointer; padding: 2px 6px; border-radius: 6px; }
+.ai-chat-close:hover { background: #2a2f3d; color: #fff; }
+
+.ai-chat-messages {
+  flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px;
+}
+.ai-chat-messages::-webkit-scrollbar { width: 4px; }
+.ai-chat-messages::-webkit-scrollbar-thumb { background: #2a2f3d; border-radius: 4px; }
+
+.msg { max-width: 85%; line-height: 1.6; font-size: 14px; }
+.msg-user {
+  align-self: flex-end; background: #0071e3; color: #fff;
+  padding: 10px 14px; border-radius: 16px 16px 4px 16px;
+}
+.msg-ai {
+  align-self: flex-start; background: #23272f; color: #e7e9ee;
+  padding: 10px 14px; border-radius: 16px 16px 16px 4px;
+}
+.msg-ai a { color: #6db3ff; }
+.msg-typing { display: flex; gap: 4px; align-items: center; padding: 12px 14px; }
+.msg-typing span {
+  width: 7px; height: 7px; border-radius: 50%; background: #555;
+  animation: typing 1.2s infinite;
+}
+.msg-typing span:nth-child(2) { animation-delay: 0.2s; }
+.msg-typing span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes typing { 0%,80%,100%{transform:scale(1);opacity:0.5} 40%{transform:scale(1.2);opacity:1} }
+
+.ai-chat-input-row {
+  padding: 12px 14px; border-top: 1px solid #2a2f3d;
+  display: flex; gap: 8px; border-radius: 0 0 18px 18px;
+}
+.ai-chat-input {
+  flex: 1; background: #23272f; border: 1px solid #2a2f3d; border-radius: 10px;
+  color: #fff; font-size: 14px; padding: 9px 12px; outline: none;
+  font-family: inherit; resize: none; height: 38px; line-height: 1.4;
+}
+.ai-chat-input:focus { border-color: #0071e3; }
+.ai-chat-send {
+  width: 38px; height: 38px; border-radius: 10px; border: none;
+  background: #0071e3; color: #fff; cursor: pointer; font-size: 16px;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.15s;
+}
+.ai-chat-send:hover { background: #0060c0; }
+.ai-chat-send:disabled { background: #2a2f3d; cursor: not-allowed; }
+
+.ai-welcome {
+  text-align: center; color: #666; font-size: 13px; padding: 20px 10px;
+}
+.ai-welcome strong { display: block; color: #9aa3b2; font-size: 15px; margin-bottom: 6px; }
+.ai-suggestion {
+  display: inline-block; margin: 4px; padding: 6px 12px;
+  background: #23272f; border: 1px solid #2a2f3d; border-radius: 999px;
+  color: #9aa3b2; font-size: 12px; cursor: pointer; transition: all 0.15s;
+}
+.ai-suggestion:hover { border-color: #0071e3; color: #6db3ff; }
+</style>
 
 <!-- AI 客服按钮 -->
-<button class="ai-fab" id="aiFab" onclick="toggleAiPanel()" title="AI 助手">
+<button class="ai-fab" id="aiFab" onclick="toggleChat()" title="AI 助手">
   <div class="ai-fab-ring"></div>
   <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
     <circle cx="11" cy="8" r="3" stroke="currentColor" stroke-width="1.5"/>
     <path d="M5 19c0-3.314 2.686-6 6-6s6 2.686 6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-    <circle cx="17.5" cy="4.5" r="1.5" fill="#0071e3"/>
+    <circle cx="17.5" cy="4.5" r="1.5" fill="#fff"/>
   </svg>
 </button>
 
-<div class="ai-panel" id="aiPanel">
-  <div class="ai-panel-header">
-    <div class="ai-panel-title">
+<!-- AI 聊天窗口 -->
+<div class="ai-chat" id="aiChat">
+  <div class="ai-chat-header">
+    <div class="ai-chat-title">
       <div class="ai-dot"></div>
       AI 助手
     </div>
-    <button class="ai-panel-close" onclick="toggleAiPanel()">✕</button>
+    <button class="ai-chat-close" onclick="toggleChat()">✕</button>
   </div>
-  <div class="ai-panel-body">
-    <input id="searchWidgetTrigger" placeholder="有什么可以帮你？" style="
-      width:100%; border:none; background:transparent;
-      color:#fff; font-size:15px; outline:none; cursor:pointer;
-    " readonly onclick="this.removeAttribute('readonly')" />
+  <div class="ai-chat-messages" id="aiMessages">
+    <div class="ai-welcome">
+      <strong>🍌 你好！有什么可以帮你？</strong>
+      关于插件安装、使用、激活等问题都可以问我
+      <div style="margin-top:12px">
+        <span class="ai-suggestion" onclick="askSuggestion(this)">怎么安装插件？</span>
+        <span class="ai-suggestion" onclick="askSuggestion(this)">支持哪些 AI 模型？</span>
+        <span class="ai-suggestion" onclick="askSuggestion(this)">如何激活许可证？</span>
+        <span class="ai-suggestion" onclick="askSuggestion(this)">扩图对不齐怎么办？</span>
+      </div>
+    </div>
+  </div>
+  <div class="ai-chat-input-row">
+    <textarea class="ai-chat-input" id="aiInput" placeholder="输入问题，按 Enter 发送…" rows="1"
+      onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMsg()}"></textarea>
+    <button class="ai-chat-send" id="aiSend" onclick="sendMsg()">➤</button>
   </div>
 </div>
 
 <script>
-function toggleAiPanel() {
-  const panel = document.getElementById('aiPanel');
-  panel.classList.toggle('open');
-  if (panel.classList.contains('open')) {
-    setTimeout(() => document.getElementById('searchWidgetTrigger').click(), 100);
-  }
+const PROJECT = 'potent-smithy-437014-p8';
+const ENGINE  = 'eb-support-2_1781366116824';
+let chatOpen = false;
+
+function toggleChat() {
+  chatOpen = !chatOpen;
+  document.getElementById('aiChat').classList.toggle('open', chatOpen);
+  if (chatOpen) setTimeout(() => document.getElementById('aiInput').focus(), 250);
 }
+
+function askSuggestion(el) {
+  document.getElementById('aiInput').value = el.textContent;
+  sendMsg();
+}
+
+async function sendMsg() {
+  const input = document.getElementById('aiInput');
+  const q = input.value.trim();
+  if (!q) return;
+  input.value = '';
+
+  const box = document.getElementById('aiMessages');
+
+  // 用户气泡
+  const userDiv = document.createElement('div');
+  userDiv.className = 'msg msg-user';
+  userDiv.textContent = q;
+  box.appendChild(userDiv);
+
+  // 打字动画
+  const typing = document.createElement('div');
+  typing.className = 'msg msg-ai msg-typing';
+  typing.innerHTML = '<span></span><span></span><span></span>';
+  box.appendChild(typing);
+  box.scrollTop = box.scrollHeight;
+
+  document.getElementById('aiSend').disabled = true;
+
+  try {
+    const url = `https://discoveryengine.googleapis.com/v1/projects/${PROJECT}/locations/global/collections/default_collection/engines/${ENGINE}/servingConfigs/default_search:search`;
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        query: q,
+        pageSize: 5,
+        queryExpansionSpec: { condition: 'AUTO' },
+        spellCorrectionSpec: { mode: 'AUTO' },
+        contentSearchSpec: {
+          summarySpec: {
+            summaryResultCount: 5,
+            includeCitations: false,
+            languageCode: 'zh'
+          },
+          snippetSpec: { returnSnippet: true }
+        }
+      })
+    });
+    const data = await res.json();
+    const summary = data?.summary?.summaryText || '';
+    typing.remove();
+
+    const aiDiv = document.createElement('div');
+    aiDiv.className = 'msg msg-ai';
+    if (summary) {
+      aiDiv.innerHTML = summary.replace(/\n/g, '<br>');
+    } else if (data?.results?.length) {
+      const snippets = data.results.slice(0,2).map(r =>
+        r.document?.derivedStructData?.snippets?.[0]?.snippet || ''
+      ).filter(Boolean).join('<br><br>');
+      aiDiv.innerHTML = snippets || '找到了相关内容，但无法生成摘要，请查阅使用说明。';
+    } else {
+      aiDiv.textContent = '没有找到相关信息，可以发邮件咨询：i@shuaige.win';
+    }
+    box.appendChild(aiDiv);
+  } catch(e) {
+    typing.remove();
+    const errDiv = document.createElement('div');
+    errDiv.className = 'msg msg-ai';
+    errDiv.textContent = '暂时无法回答，请发邮件咨询：i@shuaige.win';
+    box.appendChild(errDiv);
+  }
+
+  document.getElementById('aiSend').disabled = false;
+  box.scrollTop = box.scrollHeight;
+}
+</script>
 
 function toggleLicenseMenu(e) {
   e.stopPropagation();
