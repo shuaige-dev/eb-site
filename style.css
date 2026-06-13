@@ -370,3 +370,99 @@ footer {
   white-space: nowrap;
 }
 .license-menu-item:hover { background: var(--surface); }
+
+/* =========================
+   功能截图区块 (中文)
+========================= */
+.features-zh {
+  width: 100%;
+  margin-bottom: 48px;
+}
+
+.fz-title {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 36px;
+  text-align: left;
+}
+
+.fz-block {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 48px;
+  align-items: center;
+}
+
+.fz-block.fz-reverse {
+  direction: rtl;
+}
+.fz-block.fz-reverse > * {
+  direction: ltr;
+}
+
+.fz-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 8px;
+}
+
+.fz-tag {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 10px;
+}
+
+.fz-h2 {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.35;
+  margin-bottom: 12px;
+  color: var(--text);
+}
+
+.fz-p {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.75;
+}
+
+.fz-imgs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.fz-imgs img {
+  width: 100%;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  display: block;
+}
+
+.fz-label {
+  font-size: 10px;
+  color: var(--muted);
+  text-align: center;
+  margin-top: 4px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 768px) {
+  .fz-block {
+    grid-template-columns: 1fr;
+  }
+  .fz-block.fz-reverse {
+    direction: ltr;
+  }
+}
