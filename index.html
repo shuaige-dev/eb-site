@@ -97,6 +97,13 @@
   </div>
 </footer>
 
+<!-- Google AI Widget -->
+<script src="https://cloud.google.com/ai/gen-app-builder/client?hl=zh_CN"></script>
+<gen-search-widget
+  configId="1e9948a8-b4bb-4ab5-9240-2dd397c1bad5"
+  triggerId="searchWidgetTrigger">
+</gen-search-widget>
+
 <!-- AI 客服按钮 -->
 <button class="ai-fab" id="aiFab" onclick="toggleAiPanel()" title="AI 助手">
   <div class="ai-fab-ring"></div>
@@ -116,14 +123,20 @@
     <button class="ai-panel-close" onclick="toggleAiPanel()">✕</button>
   </div>
   <div class="ai-panel-body">
-    <p>AI 客服即将接入，<br>有任何问题请发邮件：</p>
-    <a href="mailto:i@shuaige.win" class="ai-email">i@shuaige.win</a>
+    <input id="searchWidgetTrigger" placeholder="有什么可以帮你？" style="
+      width:100%; border:none; background:transparent;
+      color:#fff; font-size:15px; outline:none; cursor:pointer;
+    " readonly onclick="this.removeAttribute('readonly')" />
   </div>
 </div>
 
 <script>
 function toggleAiPanel() {
-  document.getElementById('aiPanel').classList.toggle('open');
+  const panel = document.getElementById('aiPanel');
+  panel.classList.toggle('open');
+  if (panel.classList.contains('open')) {
+    setTimeout(() => document.getElementById('searchWidgetTrigger').click(), 100);
+  }
 }
 
 function toggleLicenseMenu(e) {
