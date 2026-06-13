@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Erect Banana — AI Generative Fill for Photoshop</title>
+<meta name="description" content="AI Generative Fill, Outpaint & Light Harmonization — natively inside Photoshop. Powered by Gemini and OpenAI. Bring your own API key.">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #ffffff;
+  --surface: #f5f5f7;
+  --surface2: #fafafa;
+  --border: rgba(0,0,0,0.08);
+  --text: #1a1a1a;
+  --muted: #888;
+  --accent: #0071e3;
+  --accent2: #0077ed;
+  --font-body: 'DM Sans', -apple-system, sans-serif;
+  --font-mono: 'DM Mono', Consolas, monospace;
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-weight: 300;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+a { color: inherit; text-decoration: none; }
+
+/* NAV */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 40px;
+  transition: all 0.3s ease;
+}
+nav.scrolled {
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(16px);
+  padding: 13px 40px;
+  border-bottom: 1px solid var(--border);
+}
+.nav-logo {
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+.nav-right { display: flex; align-items: center; gap: 10px; }
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 8px;
+  font-family: var(--font-body);
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  padding: 8px 18px;
+  font-size: 13px;
+}
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+.btn-primary:hover {
+  background: var(--accent2);
+  box-shadow: 0 4px 16px rgba(0,113,227,0.25);
+}
+.btn-secondary {
+  background: transparent;
+  color: var(--text);
+  border-color: var(--border);
+}
+.btn-secondary:hover {
+  border-color: rgba(0,0,0,0.2);
+  background: var(--surface);
+}
+
+/* HERO */
+.hero {
+  padding: 120px 40px 80px;
+  max-width: 860px;
+  margin: 0 auto;
+  text-align: center;
+}
+.hero-eyebrow {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 20px;
+  background: rgba(0,113,227,0.07);
+  padding: 4px 14px;
+  border-radius: 999px;
+}
+.hero h1 {
+  font-size: clamp(28px, 4vw, 48px);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  color: var(--text);
+  margin-bottom: 20px;
+}
+.hero h1 em {
+  font-style: normal;
+  color: var(--accent);
+}
+.hero-sub {
+  font-size: 16px;
+  color: var(--muted);
+  line-height: 1.7;
+  max-width: 520px;
+  margin: 0 auto 36px;
+}
+.hero-cta { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+/* FEATURES */
+.features {
+  max-width: 860px;
+  margin: 80px auto 0;
+  padding: 0 40px;
+}
+.features-title {
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 40px;
+}
+
+.feature-block {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 56px;
+}
+.feature-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 8px 0 8px 0;
+}
+.feature-tag {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 10px;
+}
+.feature-info h2 {
+  font-size: 22px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  margin-bottom: 12px;
+  line-height: 1.3;
+}
+.feature-info p {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.75;
+}
+.feature-imgs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.feature-imgs img {
+  width: 100%;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  display: block;
+}
+.img-label {
+  font-size: 10px;
+  color: var(--muted);
+  text-align: center;
+  margin-top: 4px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* alternate layout */
+.feature-block.reverse { direction: rtl; }
+.feature-block.reverse > * { direction: ltr; }
+
+/* BYOK */
+.byok {
+  max-width: 860px;
+  margin: 0 auto 80px;
+  padding: 0 40px;
+}
+.byok-inner {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 40px;
+}
+.byok-inner h2 {
+  font-size: 20px;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+.byok-inner > p {
+  font-size: 14px;
+  color: var(--muted);
+  margin-bottom: 28px;
+  line-height: 1.7;
+}
+.provider-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+.provider-card {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px 18px;
+}
+.provider-name {
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+.provider-key {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--accent);
+  background: rgba(0,113,227,0.07);
+  padding: 2px 8px;
+  border-radius: 4px;
+  display: inline-block;
+  margin-bottom: 6px;
+}
+.provider-note {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+.byok-privacy {
+  margin-top: 20px;
+  font-size: 12px;
+  color: var(--muted);
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  line-height: 1.6;
+}
+.byok-privacy::before {
+  content: "🔒";
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+/* INSTALL */
+.install {
+  max-width: 860px;
+  margin: 0 auto 80px;
+  padding: 0 40px;
+}
+.install h2 {
+  font-size: 20px;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+.install > p {
+  font-size: 14px;
+  color: var(--muted);
+  margin-bottom: 28px;
+  line-height: 1.7;
+}
+.steps {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.step {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+  background: #fff;
+  transition: background 0.15s;
+}
+.step:last-child { border-bottom: none; }
+.step:hover { background: var(--surface2); }
+.step-num {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.step-body { flex: 1; }
+.step-body strong {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 3px;
+}
+.step-body span {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+.step-body a { color: var(--accent); }
+.step-body a:hover { text-decoration: underline; }
+
+/* REQUIREMENTS */
+.requirements {
+  max-width: 860px;
+  margin: 0 auto 80px;
+  padding: 0 40px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.req-card {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  background: var(--surface2);
+}
+.req-card h3 {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 10px;
+}
+.req-card p {
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--text);
+}
+
+/* FOOTER */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 28px 40px;
+}
+.footer-inner {
+  max-width: 860px;
+  margin: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.footer-left {
+  font-size: 13px;
+  color: var(--muted);
+}
+.footer-right {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+.footer-link {
+  font-size: 12px;
+  color: var(--muted);
+  transition: color 0.2s;
+}
+.footer-link:hover { color: var(--text); }
+
+/* MOBILE */
+@media (max-width: 680px) {
+  nav { padding: 14px 20px; }
+  nav.scrolled { padding: 11px 20px; }
+  .hero { padding: 90px 20px 60px; }
+  .features, .byok, .install, .requirements { padding: 0 20px; }
+  .feature-block { grid-template-columns: 1fr; }
+  .feature-block.reverse { direction: ltr; }
+  .provider-grid { grid-template-columns: 1fr; }
+  .requirements { grid-template-columns: 1fr; }
+  footer { padding: 22px 20px; }
+  .footer-inner { flex-direction: column; align-items: flex-start; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="nav">
+  <div class="nav-logo">Erect Banana</div>
+  <div class="nav-right">
+    <a href="./index.html" class="btn btn-secondary">中文</a>
+    <a href="https://exchange.adobe.com/apps/com.shuaige.erectbanana" target="_blank" class="btn btn-primary">Get on Adobe Exchange</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-eyebrow">Adobe Photoshop Plugin</div>
+  <h1>AI image editing,<br><em>natively in Photoshop.</em></h1>
+  <p class="hero-sub">Generative Fill, Canvas Outpaint, and Light Harmonization — all without leaving Photoshop. Powered by your own Gemini or OpenAI key.</p>
+  <div class="hero-cta">
+    <a href="https://exchange.adobe.com/apps/com.shuaige.erectbanana" target="_blank" class="btn btn-primary">Get it on Adobe Exchange</a>
+    <a href="https://github.com/shuaige-dev/erect-banana" target="_blank" class="btn btn-secondary">View on GitHub</a>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features">
+  <div class="features-title">What it does</div>
+
+  <!-- Fill -->
+  <div class="feature-block">
+    <div class="feature-info">
+      <div class="feature-tag">Generative Fill</div>
+      <h2>Change anything with a selection and a prompt.</h2>
+      <p>Draw a selection around any area, describe the change you want, and the result is composited directly into a new layer — with automatic feathered-mask blending. Works on transparent cutout images too.</p>
+    </div>
+    <div>
+      <div class="feature-imgs">
+        <div>
+          <img src="https://raw.githubusercontent.com/shuaige-dev/erect-banana/main/assets/fill-before.png" alt="Before generative fill" loading="lazy">
+          <div class="img-label">Before</div>
+        </div>
+        <div>
+          <img src="https://raw.githubusercontent.com/shuaige-dev/erect-banana/main/assets/fill-after.png" alt="After generative fill" loading="lazy">
+          <div class="img-label">After</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Outpaint -->
+  <div class="feature-block reverse">
+    <div class="feature-info">
+      <div class="feature-tag">Outpaint</div>
+      <h2>Extend the canvas in any direction.</h2>
+      <p>Pull the canvas wider or taller with the Crop tool, then click Outpaint. AI fills the new area while preserving every original pixel — matching lighting, perspective, and style seamlessly.</p>
+    </div>
+    <div>
+      <div class="feature-imgs">
+        <div>
+          <img src="https://raw.githubusercontent.com/shuaige-dev/erect-banana/main/assets/outpaint-before.png" alt="Before outpaint" loading="lazy">
+          <div class="img-label">Before</div>
+        </div>
+        <div>
+          <img src="https://raw.githubusercontent.com/shuaige-dev/erect-banana/main/assets/outpaint-after.png" alt="After outpaint" loading="lazy">
+          <div class="img-label">After</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Harmonize -->
+  <div class="feature-block">
+    <div class="feature-info">
+      <div class="feature-tag">Light Harmonization</div>
+      <h2>Make composites look like they belong.</h2>
+      <p>Automatically adjusts the lighting direction, color temperature, and shadow softness of a composited layer so it matches the background — no manual color grading needed.</p>
+    </div>
+    <div>
+      <div class="feature-imgs">
+        <div>
+          <img src="https://raw.githubusercontent.com/shuaige-dev/erect-banana/main/assets/harmonize-before.png" alt="Before harmonize" loading="lazy">
+          <div class="img-label">Before</div>
+        </div>
+        <div>
+          <img src="https://raw.githubusercontent.com/shuaige-dev/erect-banana/main/assets/harmonize-after.png" alt="After harmonize" loading="lazy">
+          <div class="img-label">After</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BYOK -->
+<section class="byok">
+  <div class="byok-inner">
+    <h2>Bring your own API key</h2>
+    <p>Erect Banana has no backend and no per-generation charge. You connect your own key from any supported provider and pay them directly — at their published rates.</p>
+    <div class="provider-grid">
+      <div class="provider-card">
+        <div class="provider-name">Google AI Studio</div>
+        <div class="provider-key">AIza…</div>
+        <div class="provider-note">Gemini 2.5 / 3.1 / 3 Pro Image ("Nano Banana" family). Free tier available — 15 req/min.</div>
+      </div>
+      <div class="provider-card">
+        <div class="provider-name">OpenAI</div>
+        <div class="provider-key">sk-proj-…</div>
+        <div class="provider-note">GPT-Image-2. Direct connection to OpenAI's API endpoint.</div>
+      </div>
+      <div class="provider-card">
+        <div class="provider-name">OpenRouter</div>
+        <div class="provider-key">sk-or-v1-…</div>
+        <div class="provider-note">Unified access to Gemini and GPT-Image models through a single key.</div>
+      </div>
+      <div class="provider-card">
+        <div class="provider-name">Google Vertex AI</div>
+        <div class="provider-key">Service account JSON</div>
+        <div class="provider-note">For users with their own GCP project. No key field — bridge reads your service account automatically.</div>
+      </div>
+    </div>
+    <div class="byok-privacy">
+      Your images go straight from your machine to the provider you choose. Nothing passes through any server operated by the plugin author.
+    </div>
+  </div>
+</section>
+
+<!-- INSTALL -->
+<section class="install">
+  <h2>How to install</h2>
+  <p>Erect Banana is distributed through Adobe Exchange. The plugin itself installs in one click; the local processing engine needs a separate one-time download.</p>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <strong>Install the plugin from Adobe Exchange</strong>
+        <span>Search "Erect Banana" in Photoshop's Exchange panel, or <a href="https://exchange.adobe.com/apps/com.shuaige.erectbanana" target="_blank">open the listing page</a> directly.</span>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <strong>Download and run the Companion Engine</strong>
+        <span>The plugin needs a small local service to process images. Download <a href="https://github.com/shuaige-dev/erect-banana/releases/download/v1.0.0/ErectBanana-1.0.0-Exchange.exe" target="_blank">ErectBanana-1.0.0-Exchange.exe</a> and run it once — it will start automatically with Photoshop from then on.</span>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <strong>Open Photoshop → Plugins → Erect Banana</strong>
+        <span>Paste your API key from any supported provider and click Test Connection to verify.</span>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-body">
+        <strong>Make a selection and start generating</strong>
+        <span>Draw a selection, type a prompt, click the banana button — or press Enter.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- REQUIREMENTS -->
+<section class="requirements">
+  <div class="req-card">
+    <h3>Photoshop</h3>
+    <p>Adobe Photoshop 24.2 or later<br>(Windows or macOS)</p>
+  </div>
+  <div class="req-card">
+    <h3>API Key</h3>
+    <p>One key from Google AI Studio, OpenAI, OpenRouter, or Vertex AI. Free tier on Google covers typical personal use.</p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-left">© 2026 Erect Banana</div>
+    <div class="footer-right">
+      <a href="mailto:i@shuaige.win" class="footer-link">i@shuaige.win</a>
+      <a href="https://github.com/shuaige-dev/erect-banana/issues" target="_blank" class="footer-link">Bug reports</a>
+      <a href="https://github.com/shuaige-dev/erect-banana/blob/main/PRIVACY.md" target="_blank" class="footer-link">Privacy</a>
+      <a href="./index.html" class="footer-link">中文</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+window.addEventListener('scroll', () => {
+  document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 20);
+});
+</script>
+
+</body>
+</html>
